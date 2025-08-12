@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %} - Laser Sports NZ</title>
+    {% load django_bootstrap5 %}
+    {% block styles %}
+    {% bootstrap_css %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/static/lsnz/style.css">
+    {% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#303030;">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="/">
+                    <img src="/static/lsnz/wordmarkGreyBG-600x164.png" alt="Laser Sports NZ Logo" class="site-logo me-2" height="40">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="/play" id="playDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Play</a>
+                            <ul class="dropdown-menu" aria-labelledby="playDropdown">
+                                <li><a class="dropdown-item" href="/events">Events</a></li>
+                                <li><a class="dropdown-item" href="/leagues">Leagues</a></li>
+                                <li><a class="dropdown-item" href="/formats">Game Formats</a></li>
+                                <li><a class="dropdown-item" href="/guides"></a>Guides to Improving</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="/results" id="resultsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Results</a>
+                            <ul class="dropdown-menu" aria-labelledby="resultsDropdown">
+                                <li><a class="dropdown-item" href="/invitationals">Invitationals</a></li>
+                                <li><a class="dropdown-item" href="/zltac">ZLTAC</a></li>
+                                <li><a class="dropdown-item" href="/worlds">Worlds</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="/players">Players</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="/resources" id="resourcesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
+                            <ul class="dropdown-menu" aria-labelledby="resourcesDropdown">
+                                <li><a class="dropdown-item" href="#">Maze Maps</a></li>
+                                <li><a class="dropdown-item" href="#">Rules & Regulations</a></li>
+                                <li><a class="dropdown-item" href="#">Tools & How Tos</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/about">About Us</a></li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            {% if current_user.is_anonymous %}
+                            <a class="btn btn-info ms-lg-3" href="/login">Login</a>
+                            {% else %}
+                            <a class="btn btn-info ms-lg-3" href="player/tradey' ">Profile</a>
+                            <a class="btn btn-info ms-lg-3" href="/logout">Logout</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="site-main container flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer text-light mt-5 py-4" style="background-color: #303030;">
+        <div class="container footer-inner d-flex flex-wrap justify-content-between align-items-center">
+            <div class="footer-links mb-2 mb-lg-0">
+                <a class="text-info me-3" href="/terms">Terms of Service</a>
+                <a class="text-info me-3" href="/privacy">Privacy Policy</a>
+                <a class="text-info" href="mailto:admin@lasersportsnz.com">Contact: admin@lasersportsnz.com</a>
+            </div>
+            <div class="footer-social mb-2 mb-lg-0">
+                <a href="https://www.facebook.com/LaserSportsNZ/" target="_blank" rel="noopener" aria-label="Facebook" class="text-info fs-3">
+                    <i class="bi bi-facebook"></i>
+                </a>
+                <a href="https://www.youtube.com/channel/UCVOFJ4_4ECdxqW1NDom71rA" target="_blank" rel="noopener" aria-label="YouTube" class="text-info fs-3">
+                    <i class="bi bi-youtube"></i>
+                </a>
+                <a href="https://www.twitch.tv/lasersportsnz" target="_blank" rel="noopener" aria-label="Twitch" class="text-info fs-3">
+                    <i class="bi bi-twitch"></i>
+                </a>
+                <a href="https://www.instagram.com/lasersportsnz/" target="_blank" rel="noopener" aria-label="Instagram" class="text-info fs-3">
+                    <i class="bi bi-instagram"></i>
+                </a>
+                <a href="https://github.com/lasersportsnz" target="_blank" rel="noopener" aria-label="GitHub" class="text-info fs-3">
+                    <i class="bi bi-github"></i>
+                </a>
+            </div>
+            <div class="footer-copyright">
+                &copy; 2025 Laser Sports New Zealand
+            </div>
+        </div>
+    </footer>
+    {% block scripts %}
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+        {% bootstrap_javascript %}
+    {% endblock %}
+</body>
+</html>

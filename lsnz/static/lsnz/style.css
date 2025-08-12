@@ -1,0 +1,155 @@
+* {
+    box-sizing: border-box;
+}
+html, body {
+    height: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Quantico', monospace;
+    overflow-x: hidden;
+}
+
+body {
+    background: url('/static/lsnz/Large-Background-Repeatable-01-scaled.jpg') repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center center;
+    background-repeat: repeat;
+}
+@media (max-width: 900px) {
+    body {
+        background-attachment: scroll;
+        background-size: cover;
+        background-position: center top;
+    }
+}
+
+.site-logo {
+    height: 54px;
+    max-width: 240px;
+    margin-right: 12px;
+}
+@media (max-width: 900px) {
+    .site-logo {
+        height: 40px;
+        max-width: 160px;
+    }
+}
+
+.text-content-box {
+    margin: 2.5rem auto 0 auto;
+    /* Adds a gap above the content box on every page */
+    padding: 32px 24px;
+    background: #23272b;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    border: 1px solid #444;
+    color: #fff;
+}
+.text-content-box h1, .text-content-box h2, .text-content-box h3, .text-content-box h4, .text-content-box h5, .text-content-box h6 {
+    color: #fff;
+}
+.text-content-box a { color: #72C2E8; }
+.text-content-box ul, .text-content-box ol { color: #fff; }
+.text-content-box p { color: #fff; }
+
+.footer-social {
+    margin-top: 10px;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.footer-social a {
+    color: #72C2E8;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 1.05em;
+}
+.footer-social-icon {
+    font-size: 1.2em;
+    margin-right: 4px;
+}
+.footer-social-icon-img {
+    width: 44px;
+    height: 44px;
+    margin-right: 6px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+@font-face {
+  font-family: 'Inconsolata';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: 100%;
+  src: url('fonts/inconsolata.woff2') format('woff2'); 
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* latin */
+@font-face {
+  font-family: 'Quantico';
+  src: url('fonts/Quantico-Regular.ttf');
+  font-weight: bold;
+}
+
+/* Grades Table Styling - improved for visibility and width */
+.grades-table {
+    width: 98%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    background: #f8f9fa;
+    color: #23272b;
+    table-layout: fixed;
+}
+.grades-table th, .grades-table td {
+    border: 1px solid #444;
+    padding: 10px 16px;
+    text-align: left;
+    color: #23272b;
+    background: #f8f9fa;
+    overflow-wrap: break-word;
+}
+.grades-table th {
+    background: #e3e6ea;
+    color: #007bff;
+    font-weight: bold;
+}
+.grades-table td[data-field="description"] {
+    width: 40%;
+    min-width: 300px;
+    max-width: 500px;
+}
+.grades-table td[data-field="letter"] {
+    width: 10%;
+    min-width: 60px;
+}
+.grades-table td[data-field="points"] {
+    width: 10%;
+    min-width: 60px;
+}
+.grades-table td:last-child {
+    width: 20%;
+    min-width: 120px;
+}
+.grades-table tr:nth-child(even) {
+    background: #e9ecef;
+}
+@media (max-width: 900px) {
+    .site-logo {
+        height: 32px;
+        max-width: 120px;
+    }
+    .text-content-box {
+        padding: 18px 6px;
+    }
+    .footer-social-icon-img {
+        width: 36px;
+        height: 36px;
+    }
+}
