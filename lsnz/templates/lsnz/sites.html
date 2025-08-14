@@ -1,10 +1,10 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "lsnz/base.html" %} {% block content %}
 <div class="text-content-box">
     <h2>Sites</h2>
     <div class="table-responsive">
-        <table class="table table-dark table-striped table-bordered align-middle mb-0">
+        <table
+            class="table table-dark table-striped table-bordered align-middle mb-0"
+        >
             <thead>
                 <tr>
                     <th>Name</th>
@@ -17,8 +17,10 @@
                 {% for site in sites %}
                 <tr>
                     <td>
-                        {% set site_slug = site.name.lower().replace(' ', '-') %}
-                        <a href="{{ url_for('events.site_detail', site_slug=site_slug) }}">{{ site.name }}</a>
+                        <a
+                            href="{% url 'site_detail' site_slug=site.name|lower|slugify %}"
+                            >{{ site.name }}</a
+                        >
                     </td>
                     <td>{{ site.country }}</td>
                     <td>{{ site.address }}</td>

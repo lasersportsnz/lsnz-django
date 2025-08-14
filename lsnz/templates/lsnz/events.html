@@ -1,10 +1,10 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "lsnz/base.html" %} {% block content %}
 <div class="text-content-box">
     <h2>Events</h2>
     <div class="table-responsive">
-        <table class="table table-dark table-striped table-bordered align-middle mb-0">
+        <table
+            class="table table-dark table-striped table-bordered align-middle mb-0"
+        >
             <thead>
                 <tr>
                     <th>Name</th>
@@ -19,17 +19,19 @@
                 <tr>
                     <td>
                         {# Create a slug: lowercase, spaces to hyphens #}
-                        {% set event_slug = event.name.lower().replace(' ', '-') %}
-                        <a href="{{ url_for('events.event_detail', event_slug=event_slug) }}">{{ event.name }}</a>
+                        <a
+                            href="{% url 'event_detail' event_slug=event.name|lower|slugify %}"
+                            >{{ event.name }}</a
+                        >
                     </td>
                     <td>{{ event.date }}</td>
                     <td>
                         {% if event.site.name %}
-                            {% set site_slug = event.site.name.lower().replace(' ', '-') %}
-                            <a href="{{ url_for('events.site_detail', site_slug=site_slug) }}">{{ event.site.name }}</a>
-                        {% else %}
-                            &mdash;
-                        {% endif %}
+                        <a
+                            href="{% url 'site_detail' site_slug=event.site.name|lower|slugify %}"
+                            >{{ event.site.name }}</a
+                        >
+                        {% else %} &mdash; {% endif %}
                     </td>
                     <td>{{ event.points_cap }}</td>
                     <td>{{ event.format }}</td>

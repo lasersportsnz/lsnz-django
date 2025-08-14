@@ -1,0 +1,44 @@
+{% extends "lsnz/base.html" %} {% block content %}
+<div class="text-content-box">
+    <h1>{{ post.title }}</h1>
+    {% if user == post.author %}
+    <p>
+        <a href="{% url 'edit_blog_post' post_slug=post.title|lower|slugify %}"
+            >Edit</a
+        >
+    </p>
+    {% endif %} {{ content|safe }}
+</div>
+<div class="table-responsive">
+    <table
+        class="table table-bordered table-dark align-middle mb-0"
+        style="max-width: 600px; background-color: #23272b"
+    >
+        <tr valign="top">
+            <td style="width: 140px">
+                <img
+                    src="{{ post.author.profile_picture }}"
+                    class="img-fluid rounded"
+                    alt="Profile picture"
+                />
+            </td>
+            <td>
+                <h1 class="h4 mb-2">Player: {{ post.author.alias }}</h1>
+                <p class="mb-1">
+                    {{ post.author.first_name }} {{ post.author.last_name }}
+                </p>
+                <p class="mb-1">
+                    <strong>Grade:</strong> {{ post.author.grade.letter }}
+                </p>
+                <p class="mb-1">
+                    <strong>Playing since:</strong> {{ post.author.playing_since
+                    }}
+                </p>
+                {% if post.author.bio %}
+                <p class="mb-0">{{ post.author.bio }}</p>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

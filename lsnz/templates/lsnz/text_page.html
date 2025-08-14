@@ -1,0 +1,7 @@
+{% extends "lsnz/base.html" %} {% block content %}
+<div class="text-content-box">
+    {% if title %}
+    <h1>{{ title }}</h1>
+    {% endif %} {% if text_content %} {{ text_content|safe }} {% endif %}
+</div>
+{% endblock %}

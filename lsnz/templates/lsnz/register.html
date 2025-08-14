@@ -1,0 +1,9 @@
+{% extends "lsnz/base.html" %} {% block content %}
+<div class="text-content-box">
+    <h2>Register for {{ event.name }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+</div>
+{% endblock %}

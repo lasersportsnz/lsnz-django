@@ -97,16 +97,6 @@ TEMPLATES = [
             ],
         },
     },
-    {
-        'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [
-            "/templates/lsnz",
-        ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'environment': 'lsnz.jinja2.environment',
-        },
-    },
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -177,3 +167,7 @@ ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 STATIC_URL = "static/"
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
