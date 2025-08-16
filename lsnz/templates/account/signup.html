@@ -1,0 +1,93 @@
+{% extends "lsnz/base.html" %}
+{% load django_bootstrap5 %}
+{% load socialaccount %}
+
+{% block content %}
+<div class="text-content-box">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card bg-dark text-white">
+                <div class="card-header text-center">
+                    <h3 class="card-title mb-0">Create Account</h3>
+                </div>
+                <div class="card-body">
+                    {% if form.errors or form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            {% if form.non_field_errors %}
+                                {{ form.non_field_errors }}
+                            {% else %}
+                                Please correct the errors below.
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Social Login Section -->
+                    {% get_providers as socialaccount_providers %}
+                    {% if socialaccount_providers %}
+                        <div class="mb-4">
+                            {% for provider in socialaccount_providers %}
+                                {% if provider.id == "google" %}
+                                    <a href="{% provider_login_url 'google' %}" class="btn btn-light w-100 mb-2">
+                                        <i class="bi bi-google me-2"></i>
+                                        Sign up with Google
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <span class="text-muted">or</span>
+                        </div>
+                    {% endif %}
+
+                    <!-- Registration Form -->
+                    <form method="post" action="{% url 'account_signup' %}">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            {% bootstrap_field form.email show_label=True %}
+                        </div>
+
+                        <div class="mb-3">
+                            {% bootstrap_field form.first_name show_label=True %}
+                        </div>
+
+                        <div class="mb-3">
+                            {% bootstrap_field form.last_name show_label=True %}
+                        </div>
+
+                        <div class="mb-3">
+                            {% bootstrap_field form.alias show_label=True %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {% bootstrap_field form.password1 show_label=True %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {% bootstrap_field form.password2 show_label=True %}
+                        </div>
+
+                        {% if redirect_field_value %}
+                            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                        {% endif %}
+
+                        <div class="d-grid">
+                            {% bootstrap_button button_type="submit" content="Create Account" button_class="btn-primary" %}
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <p class="mb-0">
+                        Already have an account? 
+                        <a href="{% url 'account_login' %}" class="text-decoration-none">
+                            Sign in here
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

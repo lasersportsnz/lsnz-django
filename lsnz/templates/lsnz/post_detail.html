@@ -1,44 +1,125 @@
-{% extends "lsnz/base.html" %} {% block content %}
+{% extends "lsnz/base.html" %}
+{% load django_bootstrap5 %}
+
+{% block content %}
 <div class="text-content-box">
-    <h1>{{ post.title }}</h1>
-    {% if user == post.author %}
-    <p>
-        <a href="{% url 'edit_blog_post' post_slug=post.title|lower|slugify %}"
-            >Edit</a
-        >
-    </p>
-    {% endif %} {{ content|safe }}
-</div>
-<div class="table-responsive">
-    <table
-        class="table table-bordered table-dark align-middle mb-0"
-        style="max-width: 600px; background-color: #23272b"
-    >
-        <tr valign="top">
-            <td style="width: 140px">
-                <img
-                    src="{{ post.author.profile_picture }}"
-                    class="img-fluid rounded"
-                    alt="Profile picture"
-                />
-            </td>
-            <td>
-                <h1 class="h4 mb-2">Player: {{ post.author.alias }}</h1>
-                <p class="mb-1">
-                    {{ post.author.first_name }} {{ post.author.last_name }}
-                </p>
-                <p class="mb-1">
-                    <strong>Grade:</strong> {{ post.author.grade.letter }}
-                </p>
-                <p class="mb-1">
-                    <strong>Playing since:</strong> {{ post.author.playing_since
-                    }}
-                </p>
-                {% if post.author.bio %}
-                <p class="mb-0">{{ post.author.bio }}</p>
-                {% endif %}
-            </td>
-        </tr>
-    </table>
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="mb-2">{{ post.title }}</h1>
+            <p class="text-muted mb-0">
+                <small>
+                    <i class="bi bi-calendar3 me-1"></i>{{ post.created_at|date:"F d, Y" }}
+                    {% if post.updated_at != post.created_at %}
+                        <span class="mx-2">•</span>
+                        <i class="bi bi-pencil-square me-1"></i>Updated {{ post.updated_at|date:"F d, Y" }}
+                    {% endif %}
+                </small>
+            </p>
+        </div>
+
+        {% if user == post.author %}
+        <div>
+            {% url 'lsnz:edit_blog_post' slug=post.slug as edit_url %}
+            {% bootstrap_button content="<i class='bi bi-pencil-square me-1'></i>Edit Post" button_type="link" href=edit_url button_class="btn-outline-primary btn-sm" %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if post.image %}
+    <div class="mb-4">
+        <img src="{{ post.image.url }}" class="img-fluid rounded" alt="{{ post.title }}" style="max-height: 400px; width: 100%; object-fit: cover;">
+    </div>
+    {% endif %}
+
+    <div class="post-content mb-5">
+        {{ post.body|linebreaks }}
+    </div>
+
+    <hr class="my-4">
+
+    <!-- Author Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card bg-dark text-white border-secondary author-card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="avatar-container">
+                                {% if post.author.profile_picture %}
+                                    <img src="{{ post.author.profile_picture.url }}"
+                                         class="rounded-circle border border-2 border-light"
+                                         alt="{{ post.author.alias }}"
+                                         style="width: 80px; height: 80px; object-fit: cover;">
+                                {% else %}
+                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center border border-2 border-light"
+                                         style="width: 80px; height: 80px;">
+                                        <i class="bi bi-person-fill text-light" style="font-size: 2rem;"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="author-info">
+                                <h5 class="card-title mb-1">
+                                    <a href="{% url 'lsnz:player_detail' slug=post.author.slug %}"
+                                       class="text-decoration-none text-white fw-bold">
+                                        {{ post.author.alias }}
+                                    </a>
+                                </h5>
+                                <h6 class="text-muted mb-2">{{ post.author.first_name }} {{ post.author.last_name }}</h6>
+
+                                <div class="author-meta d-flex flex-wrap gap-3 mb-2">
+                                    {% if post.author.grade %}
+                                    <span class="badge bg-primary">
+                                        <i class="bi bi-award me-1"></i>Grade {{ post.author.grade.letter }}
+                                    </span>
+                                    {% endif %}
+
+                                    {% if post.author.home_site %}
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-geo-alt me-1"></i>{{ post.author.home_site.name }}
+                                    </span>
+                                    {% endif %}
+
+                                    <span class="badge bg-info">
+                                        <i class="bi bi-clock me-1"></i>Playing since {{ post.author.playing_since|date:"Y" }}
+                                    </span>
+                                </div>
+
+                                {% if post.author.bio %}
+                                <p class="card-text mb-0">
+                                    <small class="text-muted">{{ post.author.bio|truncatewords:25 }}</small>
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <a href="{% url 'lsnz:player_detail' slug=post.author.slug %}"
+                               class="btn btn-outline-light btn-sm">
+                                <i class="bi bi-person-lines-fill me-1"></i>View Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-secondary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-person-badge me-1"></i>Author
+                        </small>
+                        <small class="text-muted">
+                            <i class="bi bi-eye me-1"></i>Post published {{ post.created_at|date:"F d, Y" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="mt-4 text-center">
+        <a href="{% url 'lsnz:blog' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Blog
+        </a>
+    </div>
 </div>
 {% endblock %}

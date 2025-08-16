@@ -1,12 +1,21 @@
+from django.contrib.admin.options import re
 import markdown
 import os
+from django.utils import timezone
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.utils.text import slugify
 from django.db.models import Q, Value
 from django.db.models.functions import Lower, Replace
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView, FormView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.contrib import messages
 from django.conf import settings
-from .models import Event, Site, Player, Grade, Post
+from .models import Tournament, Site, Player, Grade, Post, Registration, Event, System
+from .forms import PostForm, TournamentRegistrationForm, PlayerProfileForm
 
 def load_markdown_content(filename):
     """Load and convert markdown file to HTML"""
@@ -23,129 +32,194 @@ def index(request):
     context = {}
     return render(request, "lsnz/base.html", context)
 
-def events(request):
-    events = Event.objects.all().select_related('site').order_by('-date')
-    context = {'events': events}
-    return render(request, "lsnz/events.html", context)
+class TournamentListView(ListView):
+    model = Tournament
+    template_name = 'lsnz/tournaments.html'
+    context_object_name = 'tournaments'
+    ordering = ['-start_date']
+    queryset = Tournament.objects.select_related('site', 'system')
 
-def sites(request):
-    sites = Site.objects.all().order_by('name')
-    context = {'sites': sites}
-    return render(request, "lsnz/sites.html", context)
+class TournamentDetailView(DetailView):
+    model = Tournament
+    template_name = 'lsnz/tournament_detail.html'
+    context_object_name = 'tournament'
 
-def players(request):
-    players = Player.objects.all().select_related('grade').order_by('alias')
-    grades = Grade.objects.all().order_by('points')
-    context = {'players': players, 'grades': grades}
-    return render(request, "lsnz/players.html", context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tournament = self.get_object()
 
-def event_detail(request, event_slug):
-    """View for individual event details"""
-    # Find event by matching slugified name, include site data for template
-    event = get_object_or_404(
-        Event.objects.select_related('site').annotate(
-            slug=Replace(Lower('name'), Value(' '), Value('-'))
-        ).filter(slug=event_slug.lower())
-    )
+        # Check if tournament is in the future
+        context['is_future_tournament'] = tournament.start_date > timezone.now().date()
 
-    # TODO: Add logic for is_future_event and already_registered
-    context = {
-        'event': event,
-        'is_future_event': False,  # placeholder
-        'already_registered': False,  # placeholder
-    }
-    return render(request, "lsnz/event_detail.html", context)
+        # Check if user is already registered (only if authenticated)
+        context['already_registered'] = False
+        if self.request.user.is_authenticated:
+            # Check if user is registered for any event in this tournament
+            user_registrations = Registration.objects.filter(
+                event__tournament=tournament,
+                player=self.request.user
+            ).exists()
+            context['already_registered'] = user_registrations
 
-def site_detail(request, site_slug):
-    """View for individual site details"""
-    # Find site by matching slugified name using database functions
-    site = get_object_or_404(
-        Site.objects.annotate(
-            slug=Replace(Lower('name'), Value(' '), Value('-'))
-        ).filter(slug=site_slug.lower())
-    )
+        return context
 
-    context = {'site': site}
-    return render(request, "lsnz/site_detail.html", context)
+class SiteListView(ListView):
+    model = Site
+    template_name = 'lsnz/sites.html'
+    context_object_name = 'sites'
+    ordering = ['name']
 
-def player_detail(request, alias):
-    """View for individual player details"""
-    player = get_object_or_404(Player.objects.select_related('grade'), alias=alias)
+class SiteDetailView(DetailView):
+    model = Site
+    template_name = 'lsnz/site_detail.html'
+    context_object_name = 'site'
 
-    # Get posts by this player
-    posts = Post.objects.filter(author=player).order_by('-created_at')
+class SystemListView(ListView):
+    model = System
+    template_name = 'lsnz/systems.html'
+    context_object_name = 'systems'
 
-    context = {
-        'player': player,
-        'posts': posts,
-    }
-    return render(request, "lsnz/player_detail.html", context)
+class SystemDetailView(DetailView):
+    model = System
+    template_name = 'lsnz/system_detail.html'
+    context_object_name = 'system'
 
-def event_register(request, event_slug):
-    """View for event registration"""
-    event = get_object_or_404(
-        Event.objects.select_related('site').annotate(
-            slug=Replace(Lower('name'), Value(' '), Value('-'))
-        ).filter(slug=event_slug.lower())
-    )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        system = self.get_object()
+        context['sites'] = Site.objects.filter(system=system).order_by('name')
+        context['tournaments'] = Tournament.objects.filter(system=system).select_related('site').order_by('-start_date')
+        return context
 
-    if request.method == 'POST':
-        # TODO: Implement registration logic
-        return HttpResponse(f"Registration for {event.name} submitted (placeholder)")
+class PlayerListView(ListView):
+    model = Player
+    template_name = 'lsnz/players.html'
+    context_object_name = 'players'
 
-    context = {'event': event}
-    return render(request, "lsnz/register.html", context)
+    def get_queryset(self):
+        return Player.objects.all().select_related('grade').order_by('alias')
 
-def event_deregister(request, event_slug):
-    """View for event deregistration"""
-    if request.method == 'POST':
-        # TODO: Implement deregistration logic
-        return HttpResponse(f"Deregistration from {event_slug} processed (placeholder)")
-    return HttpResponse("Method not allowed", status=405)
+class PlayerDetailView(DetailView):
+    model = Player
+    template_name = 'lsnz/player_detail.html'
+    context_object_name = 'player'
 
-def blog(request, page=1):
-    """View for blog posts with pagination"""
-    posts = Post.objects.select_related('author').order_by('-created_at')
-    # TODO: Implement proper pagination
-    context = {
-        'posts': posts,
-        'page': page,
-        'pages': [1],  # placeholder
-        'total_pages': 1,  # placeholder
-        'prev_url': None,
-        'next_url': None,
-        'show_last': False,
-    }
-    return render(request, "lsnz/posts.html", context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        player = self.get_object()
+        posts = Post.objects.filter(author=player).order_by('-created_at')
+        grades = Grade.objects.all().order_by('points')
+        context['posts'] = posts
+        context['grades'] = grades
+        return context
 
-def post_detail(request, post_slug):
-    """View for individual post details"""
-    post = get_object_or_404(
-        Post.objects.select_related('author', 'author__grade').annotate(
-            slug=Replace(Lower('title'), Value(' '), Value('-'))
-        ).filter(slug=post_slug.lower())
-    )
+class PlayerUpdateView(LoginRequiredMixin, UpdateView):
+    model = Player
+    form_class = PlayerProfileForm
+    template_name = 'lsnz/edit_profile.html'
+    context_object_name = 'player'
 
-    context = {
-        'post': post,
-        'content': post.body,  # TODO: Process markdown or rich text
-    }
-    return render(request, "lsnz/post_detail.html", context)
+    def get_object(self, queryset=None):
+        # Always return the current user's profile
+        return self.request.user
 
-def write_post(request):
+    def form_valid(self, form):
+        messages.success(self.request, 'Profile updated successfully!')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return f"/players/{self.object.slug}"
+
+class TournamentRegistrationView(LoginRequiredMixin, FormView):
+    """View for tournament registration"""
+    template_name = 'lsnz/register.html'
+    form_class = TournamentRegistrationForm
+
+    def get_tournament(self):
+        return get_object_or_404(Tournament, slug=self.kwargs['slug'])
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['tournament'] = self.get_tournament()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tournament'] = self.get_tournament()
+        return context
+
+    def form_valid(self, form):
+        registrations = form.save()
+        if registrations:
+            messages.success(
+                self.request,
+                f'Successfully registered for {len(registrations)} event(s)!'
+            )
+        else:
+            messages.info(self.request, 'No new registrations were created.')
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return f"/tournaments/{self.kwargs['slug']}"
+
+class PostListView(ListView):
+    model = Post
+    template_name = 'lsnz/posts.html'
+    context_object_name = 'posts'
+    paginate_by = 12
+    queryset = Post.objects.select_related('author')
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'lsnz/post_detail.html'
+    context_object_name = 'post'
+
+class PostCreateView(LoginRequiredMixin, CreateView):
     """View for creating new posts"""
-    # TODO: Implement post creation form
-    return HttpResponse("Write post form (placeholder)")
+    model = Post
+    form_class = PostForm
+    template_name = 'lsnz/post_editor.html'
 
-def edit_blog_post(request, post_slug):
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        messages.success(self.request, 'Post created successfully!')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_edit'] = False
+        return context
+
+    def get_success_url(self):
+        return f"/blog/{self.object.slug}"
+
+class PostUpdateView(LoginRequiredMixin, UpdateView):
     """View for editing blog posts"""
-    # TODO: Implement post editing form
-    return HttpResponse(f"Edit post {post_slug} (placeholder)")
+    model = Post
+    form_class = PostForm
+    template_name = 'lsnz/post_editor.html'
+    slug_field = 'slug'
 
-def edit_profile(request):
-    """View for editing user profile"""
-    # TODO: Implement profile editing form
-    return HttpResponse("Edit profile form (placeholder)")
+    def get_queryset(self):
+        # Only allow authors to edit their own posts (or superusers)
+        if self.request.user.is_superuser:
+            return Post.objects.all()
+        return Post.objects.filter(author=self.request.user)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Post updated successfully!')
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_edit'] = True
+        return context
+
+    def get_success_url(self):
+        return f"/blog/{self.object.slug}"
+
+
 
 def about(request):
     """View for about page"""
@@ -170,3 +244,15 @@ def terms(request):
         'text_content': load_markdown_content('terms.md')
     }
     return render(request, "lsnz/text_page.html", context)
+
+def error_403(request, exception):
+    """View for 403 error page"""
+    return render(request, "errors/403.html", status=403)
+
+def error_404(request, exception):
+    """View for 404 error page"""
+    return render(request, "errors/404.html", status=404)
+
+def error_500(request):
+    """View for 500 error page"""
+    return render(request, "errors/500.html", status=500)

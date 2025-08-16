@@ -1,17 +1,11 @@
 {% extends "lsnz/base.html" %} {% block content %}
 <div class="text-content-box">
     <div class="table-responsive">
-        <table
-            class="table table-bordered table-dark align-middle mb-0"
-            style="max-width: 600px; background-color: #23272b"
-        >
+        <table class="table table-bordered table-dark align-middle mb-0"
+            style="max-width: 600px; background-color: #23272b">
             <tr valign="top">
                 <td style="width: 140px">
-                    <img
-                        src="{{ player.profile_picture }}"
-                        class="img-fluid rounded"
-                        alt="Profile picture"
-                    />
+                    <img src="{{ player.profile_picture.url }}" class="img-fluid rounded" alt="Profile picture" />
                 </td>
                 <td>
                     <h1 class="h4 mb-2">Player: {{ player.alias }}</h1>
@@ -22,8 +16,7 @@
                         <strong>Grade:</strong> {{ player.grade.letter }}
                     </p>
                     <p class="mb-1">
-                        <strong>Playing since:</strong> {{ player.playing_since
-                        }}
+                        <strong>Playing since:</strong> {{ player.playing_since }}
                     </p>
                     {% if player.bio %}
                     <p class="mb-0">{{ player.bio }}</p>
@@ -34,7 +27,7 @@
     </div>
     {% if player == user %}
     <div class="mt-3 mb-4">
-        <a href="{% url 'edit_profile' %}" class="btn btn-dark">
+        <a href="{% url 'lsnz:edit_profile' slug=player.slug %}" class="btn btn-dark">
             <i class="bi bi-pencil-square me-1"></i> Edit your profile
         </a>
     </div>

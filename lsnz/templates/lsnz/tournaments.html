@@ -1,0 +1,33 @@
+{% extends "lsnz/base.html" %} {% block content %}
+<div class="text-content-box">
+    <h2>Tournaments</h2>
+    <div class="table-responsive">
+        <table class="table table-dark table-striped table-bordered align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Dates</th>
+                    <th>Site</th>
+                    <th>System</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tournament in tournaments %}
+                <tr>
+                    <td>
+                        <a href="{% url 'lsnz:tournament_detail' slug=tournament.slug %}">{{ tournament.name }}</a>
+                    </td>
+                    <td>{{ tournament.start_date }} - {{ tournament.end_date }}</td>
+                    <td>
+                        {% if tournament.site.name %}
+                        <a href="{% url 'lsnz:site_detail' slug=tournament.site.slug %}">{{ tournament.site.name }}</a>
+                        {% else %} &mdash; {% endif %}
+                    </td>
+                    <td>{{ tournament.system }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

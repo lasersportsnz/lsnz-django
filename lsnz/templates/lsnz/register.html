@@ -1,9 +1,114 @@
-{% extends "lsnz/base.html" %} {% block content %}
+{% extends "lsnz/base.html" %}
+{% load django_bootstrap5 %}
+
+{% block content %}
 <div class="text-content-box">
-    <h2>Register for {{ event.name }}</h2>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
+    <div class="row">
+        <div class="col-lg-8">
+            <h1>Register for {{ tournament.name }}</h1>
+            
+            <div class="card bg-dark text-white mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Tournament Details</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">Date</dt>
+                        <dd class="col-sm-9">
+                            {% if tournament.start_date == tournament.end_date %}
+                                {{ tournament.start_date|date:"F d, Y" }}
+                            {% else %}
+                                {{ tournament.start_date|date:"F d" }} - {{ tournament.end_date|date:"F d, Y" }}
+                            {% endif %}
+                        </dd>
+                        
+                        <dt class="col-sm-3">Site</dt>
+                        <dd class="col-sm-9">
+                            <a href="{% url 'lsnz:site_detail' slug=tournament.site.slug %}">{{ tournament.site.name }}</a>
+                            <br>
+                            <small class="text-muted">{{ tournament.site.address }}, {{ tournament.site.get_country_display }}</small>
+                        </dd>
+                        
+                        <dt class="col-sm-3">System</dt>
+                        <dd class="col-sm-9">
+                            <div class="d-flex align-items-center">
+                                {% if tournament.system.image %}
+                                <img src="{{ tournament.system.image.url }}" 
+                                     alt="{{ tournament.system.name }}" 
+                                     class="me-2" 
+                                     style="width: 24px; height: 24px; object-fit: cover;">
+                                {% endif %}
+                                <a href="{% url 'lsnz:system_detail' slug=tournament.system.slug %}">{{ tournament.system.name }}</a>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                {% bootstrap_form_errors form %}
+                
+                <div class="card bg-dark text-white">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Select Events to Register For</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-3">Choose which events you'd like to participate in:</p>
+                        
+                        {% for field in form %}
+                            {% if field.name|slice:":6" == "event_" %}
+                                <div class="form-check mb-3">
+                                    {{ field }}
+                                    <label class="form-check-label ms-2" for="{{ field.id_for_label }}">
+                                        <strong>{{ field.label }}</strong>
+                                        {% if field.help_text %}
+                                            <br><small class="text-muted">{{ field.help_text }}</small>
+                                        {% endif %}
+                                    </label>
+                                    {% if field.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    {% bootstrap_button button_type="submit" content="Complete Registration" button_class="btn-success" %}
+                    <a href="{% url 'lsnz:tournament_detail' slug=tournament.slug %}" class="btn btn-secondary">Back to Tournament</a>
+                </div>
+            </form>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card bg-secondary text-white">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Registration Info</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-1"></i>
+                        You can register for multiple events in this tournament.
+                    </div>
+                    <ul class="list-unstyled mb-0">
+                        <li><i class="bi bi-check text-success me-1"></i> Select your events above</li>
+                        <li><i class="bi bi-check text-success me-1"></i> Registration is free</li>
+                        <li><i class="bi bi-check text-success me-1"></i> You can modify your registration later</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

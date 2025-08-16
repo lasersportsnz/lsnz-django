@@ -4,9 +4,7 @@
         <div class="col-lg-8 col-12 mb-4">
             <form id="player-points-form">
                 <div class="table-responsive">
-                    <table
-                        class="table table-dark table-striped table-bordered align-middle mb-0"
-                    >
+                    <table class="table table-dark table-striped table-bordered align-middle mb-0">
                         <thead>
                             <tr>
                                 <th>Alias</th>
@@ -18,19 +16,13 @@
                             {% for player in players %}
                             <tr>
                                 <td>
-                                    <a
-                                        href="{% url 'player_detail' alias=player.alias %}"
-                                        >{{ player.alias }}</a
-                                    >
+                                    <a href="{% url 'lsnz:player_detail' slug=player.slug %}">{{ player.alias }}</a>
                                 </td>
                                 <td><b>{{ player.grade.letter }}</b></td>
                                 <td>
-                                    <input
-                                        type="checkbox"
-                                        class="player-checkbox"
+                                    <input type="checkbox" class="player-checkbox"
                                         data-grade="{{ player.grade.letter }}"
-                                        data-points="{{ player.grade.points }}"
-                                    />
+                                        data-points="{{ player.grade.points }}" />
                                 </td>
                             </tr>
                             {% endfor %}

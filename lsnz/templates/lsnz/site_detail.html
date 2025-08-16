@@ -11,16 +11,9 @@
         <dt class="col-sm-3">System</dt>
         <dd class="col-sm-9">{{ site.system }}</dd>
     </dl>
-    <iframe
-        width="600"
-        height="450"
-        style="border: 0"
-        loading="lazy"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        src="https://www.google.com/maps/embed/v1/place?key={{ settings.MAPS_API_KEY }}
-            &q={{ site.name }}"
-    >
+    <iframe width="600" height="450" style="border: 0" loading="lazy" allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed/v1/place?key={{ settings.MAPS_API_KEY }}
+            &q={{ site.name }}">
     </iframe>
 </div>
 {% endblock %}

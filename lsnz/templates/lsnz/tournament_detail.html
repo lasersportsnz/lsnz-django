@@ -1,0 +1,124 @@
+{% extends "lsnz/base.html" %}
+
+{% block content %}
+<div class="text-content-box">
+    <div class="row">
+        <div class="col-lg-8">
+            <h1>{{ tournament.name }}</h1>
+            
+            <dl class="row">
+                <dt class="col-sm-3">Date</dt>
+                <dd class="col-sm-9">
+                    {% if tournament.start_date == tournament.end_date %}
+                        {{ tournament.start_date|date:"F d, Y" }}
+                    {% else %}
+                        {{ tournament.start_date|date:"F d" }} - {{ tournament.end_date|date:"F d, Y" }}
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-3">Site</dt>
+                <dd class="col-sm-9">
+                    <a href="{% url 'lsnz:site_detail' slug=tournament.site.slug %}">{{ tournament.site.name }}</a>
+                    <br>
+                    <small class="text-muted">{{ tournament.site.address }}, {{ tournament.site.get_country_display }}</small>
+                </dd>
+
+                <dt class="col-sm-3">System</dt>
+                <dd class="col-sm-9">
+                    <div class="d-flex align-items-center">
+                        {% if tournament.system.image %}
+                        <img src="{{ tournament.system.image.url }}" 
+                             alt="{{ tournament.system.name }}" 
+                             class="me-2" 
+                             style="width: 24px; height: 24px; object-fit: cover;">
+                        {% endif %}
+                        <a href="{% url 'lsnz:system_detail' slug=tournament.system.slug %}">{{ tournament.system.name }}</a>
+                    </div>
+                </dd>
+            </dl>
+        </div>
+        
+        <div class="col-lg-4">
+            {% if is_future_tournament %}
+                <div class="card bg-dark text-white">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Registration</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if user.is_authenticated %}
+                            {% if already_registered %}
+                                <div class="alert alert-success mb-3">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    You are registered!
+                                </div>
+                                <p class="text-muted">You're all set for this tournament.</p>
+                            {% else %}
+                                <p>Ready to compete? Register now!</p>
+                                <a href="{% url 'lsnz:tournament_register' slug=tournament.slug %}" 
+                                   class="btn btn-success">
+                                    <i class="bi bi-plus-lg me-1"></i>Register
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            <p>Please log in to register for this tournament.</p>
+                            <a href="{% url 'account_login' %}?next={{ request.get_full_path }}" 
+                               class="btn btn-primary">
+                                <i class="bi bi-person me-1"></i>Log In
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="card bg-secondary text-white">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Tournament Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info mb-0">
+                            <i class="bi bi-info-circle me-1"></i>
+                            This tournament has ended.
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% comment %}
+    TODO: Add events section when events are available
+    <hr class="my-4">
+    <h3>Events</h3>
+    <div class="table-responsive">
+        <table class="table table-dark table-striped table-bordered align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Format</th>
+                    <th>Time</th>
+                    <th>Points Cap</th>
+                    <th>Registrations</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in tournament.events.all %}
+                <tr>
+                    <td>{{ event.format.name }}</td>
+                    <td>
+                        {{ event.start_time|date:"g:i A" }}
+                        {% if event.end_time %}
+                            - {{ event.end_time|date:"g:i A" }}
+                        {% endif %}
+                    </td>
+                    <td>{{ event.points_cap|default:"No limit" }}</td>
+                    <td>
+                        <span class="badge bg-primary">
+                            {{ event.registration_set.count }} registered
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endcomment %}
+</div>
+{% endblock %}

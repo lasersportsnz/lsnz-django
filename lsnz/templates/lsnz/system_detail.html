@@ -1,0 +1,87 @@
+{% extends 'lsnz/base.html' %}
+
+{% block content %}
+<div class="text-content-box">
+    <div class="row">
+        <div class="col-lg-8">
+            <h1>{{ system.name }}</h1>
+            <p class="lead">{{ system.description }}</p>
+        </div>
+        <div class="col-lg-4">
+            {% if system.image %}
+            <img src="{{ system.image.url }}" class="img-fluid rounded" alt="{{ system.name }}" />
+            {% endif %}
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Sites Using {{ system.name }}</h3>
+            {% if sites %}
+            <div class="table-responsive">
+                <table class="table table-dark table-striped table-bordered align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Country</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for site in sites %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'lsnz:site_detail' slug=site.slug %}">{{ site.name }}</a>
+                            </td>
+                            <td>{{ site.get_country_display }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No sites currently use this system.</p>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <h3>Tournaments Using {{ system.name }}</h3>
+            {% if tournaments %}
+            <div class="table-responsive">
+                <table class="table table-dark table-striped table-bordered align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Tournament</th>
+                            <th>Date</th>
+                            <th>Site</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tournament in tournaments %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'lsnz:tournament_detail' slug=tournament.slug %}">{{ tournament.name }}</a>
+                            </td>
+                            <td>
+                                {% if tournament.start_date == tournament.end_date %}
+                                    {{ tournament.start_date|date:"M d, Y" }}
+                                {% else %}
+                                    {{ tournament.start_date|date:"M d" }} - {{ tournament.end_date|date:"M d, Y" }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'lsnz:site_detail' slug=tournament.site.slug %}">{{ tournament.site.name }}</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">No tournaments currently scheduled for this system.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

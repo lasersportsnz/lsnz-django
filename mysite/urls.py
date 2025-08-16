@@ -15,9 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.core.files.storage import handler
 from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
+
+handler403 = 'lsnz.views.error_403'
+handler404 = 'lsnz.views.error_404'
+handler500 = 'lsnz.views.error_500'
 
 urlpatterns = [
     path('', include("lsnz.urls")),

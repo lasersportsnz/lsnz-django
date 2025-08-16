@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
+from autoslug import AutoSlugField
 
 from .managers import CustomUserManager
 
@@ -31,6 +32,7 @@ class Player(AbstractUser):
     username = None
     email = models.EmailField(_("email address"), unique=True)
     alias = models.CharField(max_length=20, unique=True)
+    slug = AutoSlugField(unique=True, populate_from='alias')
     grade = models.ForeignKey(Grade, on_delete=models.PROTECT, db_index=True, blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     playing_since = models.DateTimeField(_("playing since"), db_index=True, auto_now_add=True)
@@ -52,6 +54,7 @@ class Player(AbstractUser):
 
 class Post(models.Model):
     title = models.CharField(max_length=50)
+    slug = AutoSlugField(unique=True, populate_from='title')
     summary = models.CharField(max_length=200)
     body = models.TextField()
     image = models.ImageField(upload_to='post_images/')
@@ -59,11 +62,15 @@ class Post(models.Model):
     updated_at = models.DateTimeField(db_index=True, auto_now=True)
     author = models.ForeignKey(Player, on_delete=models.PROTECT)
 
+    class Meta:
+        ordering = ['-created_at']
+
     def __str__(self):
         return self.title
 
 class System(models.Model):
     name = models.CharField(max_length=50)
+    slug = AutoSlugField(unique=True, populate_from='name')
     image = models.ImageField(upload_to='system_images/')
     description = models.TextField()
 
@@ -86,6 +93,7 @@ class Settings(models.Model):
 
 class Site(models.Model):
     name = models.CharField(max_length=100)
+    slug = AutoSlugField(unique=True, populate_from='name')
     country = models.CharField(max_length=100, choices=COUNTRIES)
     address = models.CharField(max_length=200)
     system = models.ForeignKey(System, on_delete=models.PROTECT)
@@ -95,6 +103,7 @@ class Site(models.Model):
 
 class Tournament(models.Model):
     name =  models.CharField(max_length=200)
+    slug = AutoSlugField(unique=True, populate_from='name')
     site = models.ForeignKey(Site, on_delete=models.PROTECT)
     start_date = models.DateField("Event date", db_index=True)
     end_date = models.DateField("Event date", db_index=True)
@@ -103,16 +112,23 @@ class Tournament(models.Model):
     def __str__(self):
         return self.name
 
+class Format(models.Model):
+    name = models.CharField(max_length=50)
+    slug = AutoSlugField(unique=True, populate_from='name')
+
+    def __str__(self):
+        return self.name
+
 class Event(models.Model):
     start_time = models.DateTimeField("Event start")
     end_time = models.DateTimeField("Event end", null=True, blank=True)
     points_cap = models.IntegerField(default=30, null=True, blank=True)
-    format = models.CharField(max_length=50)
+    format = models.ForeignKey(Format, on_delete=models.PROTECT)
     tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT, related_name="events")
     settings = models.ForeignKey(Settings, on_delete=models.PROTECT)
 
     def __str__(self):
-        return self.format
+        return self.format.name
 
 class Team(models.Model):
     name = models.CharField(max_length=50)

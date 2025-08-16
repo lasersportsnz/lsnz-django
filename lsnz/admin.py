@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
 # Register your models here.
-from .models import Grade, Player, Post, System, Site, Tournament, Settings, Event, Team, Registration, Pass
+from .models import Grade, Player, Post, System, Site, Tournament, Settings, Format, Event, Team, Registration, Pass
 
 admin.site.site_title = 'LSNZ'
 admin.site.site_header = 'LSNZ administration'
@@ -61,7 +61,7 @@ admin.site.register(System)
 admin.site.register(Site)
 admin.site.register(Tournament, TournamentAdmin)
 admin.site.register(Settings)
-admin.site.register(Event)
+admin.site.register(Format)
 admin.site.register(Team)
 admin.site.register(Registration, RegistrationAdmin)
 admin.site.register(Pass)
