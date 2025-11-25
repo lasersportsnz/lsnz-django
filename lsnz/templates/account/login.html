@@ -1,93 +1,21 @@
-{% extends "lsnz/base.html" %}
-{% load django_bootstrap5 %}
-{% load socialaccount %}
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
 
-{% block content %}
-<div class="text-content-box">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            <div class="card bg-dark text-white">
-                <div class="card-header text-center">
-                    <h3 class="card-title mb-0">Sign In</h3>
-                </div>
-                <div class="card-body">
-                    {% if form.errors or form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            <i class="bi bi-exclamation-triangle me-1"></i>
-                            {% if form.non_field_errors %}
-                                {{ form.non_field_errors }}
-                            {% else %}
-                                Please correct the errors below.
-                            {% endif %}
-                        </div>
-                    {% endif %}
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
 
-                    <!-- Social Login Section -->
-                    {% get_providers as socialaccount_providers %}
-                    {% if socialaccount_providers %}
-                        <div class="mb-4">
-                            {% for provider in socialaccount_providers %}
-                                {% if provider.id == "google" %}
-                                    <a href="{% provider_login_url 'google' %}" class="btn btn-light w-100 mb-2">
-                                        <i class="bi bi-google me-2"></i>
-                                        Continue with Google
-                                    </a>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-
-                        <div class="text-center mb-3">
-                            <span class="text-muted">or</span>
-                        </div>
-                    {% endif %}
-
-                    <!-- Email/Password Login Form -->
-                    <form method="post" action="{% url 'account_login' %}">
-                        {% csrf_token %}
-                        
-                        <div class="mb-3">
-                            {% bootstrap_field form.login show_label=True %}
-                        </div>
-                        
-                        <div class="mb-3">
-                            {% bootstrap_field form.password show_label=True %}
-                        </div>
-
-                        {% if form.remember %}
-                            <div class="mb-3">
-                                <div class="form-check">
-                                    {{ form.remember }}
-                                    <label class="form-check-label" for="{{ form.remember.id_for_label }}">
-                                        Remember me
-                                    </label>
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        {% if redirect_field_value %}
-                            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-                        {% endif %}
-
-                        <div class="d-grid">
-                            {% bootstrap_button button_type="submit" content="Sign In" button_class="btn-primary" %}
-                        </div>
-                    </form>
-                </div>
-                <div class="card-footer text-center">
-                    <p class="mb-2">
-                        <a href="{% url 'account_reset_password' %}" class="text-decoration-none">
-                            Forgot your password?
-                        </a>
-                    </p>
-                    <p class="mb-0">
-                        Don't have an account? 
-                        <a href="{% url 'account_signup' %}" class="text-decoration-none">
-                            Sign up here
-                        </a>
-                    </p>
-                </div>
-            </div>
-        </div>
+{% block form_actions %}
+    <div class="d-grid">
+        <button type="submit" class="btn btn-primary">{% trans "Sign In" %}</button>
     </div>
-</div>
-{% endblock %}
+{% endblock form_actions %}
+
+{% block card_footer %}
+    <div class="card-footer text-center">
+        <p class="mb-0">
+            {% trans "Don't have an account?" %}
+            <a href="{% url 'account_signup' %}" class="text-decoration-none">
+                {% trans "Sign up here" %}
+            </a>
+        </p>
+    </div>
+{% endblock card_footer %}

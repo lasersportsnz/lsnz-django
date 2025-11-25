@@ -1,9 +1,10 @@
 from datetime import timedelta
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
-from django.contrib.auth.models import AbstractUser
+
 from autoslug import AutoSlugField
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from .managers import CustomUserManager
 
@@ -35,7 +36,7 @@ class Player(AbstractUser):
     slug = AutoSlugField(unique=True, populate_from='alias')
     grade = models.ForeignKey(Grade, on_delete=models.PROTECT, db_index=True, blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
-    playing_since = models.DateTimeField(_("playing since"), db_index=True, auto_now_add=True)
+    playing_since = models.DateField(_("playing since"), db_index=True, auto_now_add=True)
     home_site = models.ForeignKey('Site', on_delete=models.PROTECT, null=True, blank=True)
     bio = models.TextField()
 

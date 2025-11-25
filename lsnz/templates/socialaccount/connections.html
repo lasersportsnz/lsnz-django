@@ -1,0 +1,107 @@
+{% extends "account/base_manage.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Account Connections" %}{% endblock %}
+
+{% block inner %}
+    <div class="mb-4">
+        <p class="text-muted">
+            {% trans "You can sign in to your account using any of the following third party accounts:" %}
+        </p>
+    </div>
+
+    {% if form.accounts %}
+        <div class="mb-4">
+            <h6 class="mb-3">{% trans "Connected Accounts" %}</h6>
+            {% for base_account in form.accounts %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                {% if base_account.get_provider.id == "google" %}
+                                    <i class="bi bi-google me-3 text-danger fs-4"></i>
+                                {% elif base_account.get_provider.id == "github" %}
+                                    <i class="bi bi-github me-3 text-dark fs-4"></i>
+                                {% elif base_account.get_provider.id == "facebook" %}
+                                    <i class="bi bi-facebook me-3 text-primary fs-4"></i>
+                                {% elif base_account.get_provider.id == "twitter" %}
+                                    <i class="bi bi-twitter me-3 text-info fs-4"></i>
+                                {% else %}
+                                    <i class="bi bi-link-45deg me-3 text-secondary fs-4"></i>
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-1">{{ base_account.get_provider.name }}</h6>
+                                    <small class="text-muted">{{ base_account.extra_data.email|default:base_account.extra_data.login|default:base_account.uid }}</small>
+                                </div>
+                            </div>
+                            <div>
+                                {% if base_account.socialaccount_set.count %}
+                                    <form method="post" action="{% url 'socialaccount_connections' %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="account" value="{{ base_account.id }}"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('{% trans "Are you sure you want to remove this account connection?" %}')">
+                                            <i class="bi bi-trash me-1"></i>{% trans "Remove" %}
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if form.providers %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-plus-circle me-2"></i>{% trans "Add a New Account Connection" %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    {% trans "Connect additional social accounts to sign in with:" %}
+                </p>
+                {% for provider in form.providers %}
+                    <a href="{% provider_login_url provider.id process="connect" %}" class="btn btn-outline-secondary me-2 mb-2">
+                        {% if provider.id == "google" %}
+                            <i class="bi bi-google me-2"></i>{% trans "Connect Google" %}
+                        {% elif provider.id == "github" %}
+                            <i class="bi bi-github me-2"></i>{% trans "Connect GitHub" %}
+                        {% elif provider.id == "facebook" %}
+                            <i class="bi bi-facebook me-2"></i>{% trans "Connect Facebook" %}
+                        {% elif provider.id == "twitter" %}
+                            <i class="bi bi-twitter me-2"></i>{% trans "Connect Twitter" %}
+                        {% else %}
+                            <i class="bi bi-link-45deg me-2"></i>{% trans "Connect" %} {{ provider.name }}
+                        {% endif %}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if not form.accounts and not form.providers %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            {% trans "No social network providers are configured." %}
+        </div>
+    {% endif %}
+{% endblock inner %}
+
+{% block card_footer %}
+    <div class="card-footer text-center">
+        <p class="mb-0">
+            <a href="{% url 'account_email' %}" class="text-decoration-none me-3">
+                {% trans "Change Email" %}
+            </a>
+            <a href="{% url 'account_change_password' %}" class="text-decoration-none me-3">
+                {% trans "Change Password" %}
+            </a>
+            <a href="{% url 'account_login' %}" class="text-decoration-none">
+                {% trans "Back to Account" %}
+            </a>
+        </p>
+    </div>
+{% endblock card_footer %}

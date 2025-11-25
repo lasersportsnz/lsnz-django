@@ -1,0 +1,41 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Confirm Email Address" %}{% endblock %}
+
+{% block inner %}
+    <div class="text-center mb-4">
+        <i class="bi bi-envelope-check display-4 text-primary mb-3"></i>
+        <h5>{% trans "Please Confirm Your Email Address" %}</h5>
+    </div>
+
+    {% if confirmation %}
+        <div class="mb-4">
+            <p class="text-muted text-center">
+                {% blocktrans with confirmation.email_address.email as email %}Please confirm that <strong>{{ email }}</strong> is an email address for user {{ confirmation.email_address.user }}.{% endblocktrans %}
+            </p>
+        </div>
+
+        <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+            {% csrf_token %}
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">{% trans "Confirm" %}</button>
+            </div>
+        </form>
+    {% else %}
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            {% trans "This email confirmation link expired or is invalid. Please issue a new email confirmation request." %}
+        </div>
+    {% endif %}
+{% endblock inner %}
+
+{% block card_footer %}
+    <div class="card-footer text-center">
+        <p class="mb-0">
+            <a href="{% url 'account_login' %}" class="text-decoration-none">
+                {% trans "Back to Sign In" %}
+            </a>
+        </p>
+    </div>
+{% endblock card_footer %}

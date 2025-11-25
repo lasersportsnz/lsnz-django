@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
                 ('alias', models.CharField(max_length=20, unique=True)),
                 ('slug', autoslug.fields.AutoSlugField(editable=False, populate_from='alias', unique=True)),
                 ('profile_picture', models.ImageField(blank=True, null=True, upload_to='profile_pictures/')),
-                ('playing_since', models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='playing since')),
+                ('playing_since', models.DateField(auto_now_add=True, db_index=True, verbose_name='playing since')),
                 ('bio', models.TextField()),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),

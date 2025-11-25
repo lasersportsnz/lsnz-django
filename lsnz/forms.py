@@ -1,7 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from .models import Post, Registration, Event, Player, Site
+
+from .models import Event, Player, Post, Registration, Site
 
 
 class PostForm(forms.ModelForm):

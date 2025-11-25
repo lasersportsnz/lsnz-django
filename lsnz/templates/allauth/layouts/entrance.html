@@ -1,0 +1,46 @@
+{% extends "lsnz/base.html" %}
+{% load django_bootstrap5 %}
+{% load i18n %}
+
+{% block content %}
+<div class="text-content-box">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card bg-dark text-white">
+                <div class="card-header text-center">
+                    <h3 class="card-title mb-0">
+                        {% block head_title %}
+                        {% endblock head_title %}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}">
+                                <i class="bi bi-{% if message.tags == 'error' %}exclamation-triangle{% elif message.tags == 'success' %}check-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %} me-1"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if form.errors or form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            {% if form.non_field_errors %}
+                                {{ form.non_field_errors }}
+                            {% else %}
+                                Please correct the errors below.
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% block inner %}
+                    {% endblock inner %}
+                </div>
+                {% block card_footer %}
+                {% endblock card_footer %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

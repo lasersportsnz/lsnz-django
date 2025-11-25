@@ -1,0 +1,40 @@
+{% extends "allauth/layouts/entrance.html" %}
+{% load django_bootstrap5 %}
+{% load socialaccount %}
+
+{% block inner %}
+    <!-- Social Login Section -->
+    {% get_providers as socialaccount_providers %}
+    {% if socialaccount_providers %}
+        <div class="mb-4">
+            {% for provider in socialaccount_providers %}
+                {% if provider.id == "google" %}
+                    <a href="{% provider_login_url 'google' %}" class="btn btn-light w-100 mb-2">
+                        <i class="bi bi-google me-2"></i>
+                        Continue with Google
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="text-center mb-3">
+            <span class="text-muted">or</span>
+        </div>
+    {% endif %}
+
+    <!-- Form Content -->
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+
+        {% block form_actions %}
+            <div class="d-grid">
+                {% bootstrap_button button_type="submit" content=button_text|default:"Submit" button_class="btn-primary" %}
+            </div>
+        {% endblock form_actions %}
+    </form>
+{% endblock inner %}

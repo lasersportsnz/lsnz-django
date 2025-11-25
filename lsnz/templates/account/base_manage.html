@@ -1,0 +1,23 @@
+{% extends "allauth/layouts/manage.html" %}
+{% load django_bootstrap5 %}
+
+{% block inner %}
+    <!-- Form Content -->
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+
+        {% block form_actions %}
+            <div class="d-grid">
+                {% bootstrap_button button_type="submit" content=button_text|default:"Update" button_class="btn-primary" %}
+            </div>
+        {% endblock form_actions %}
+    </form>
+
+    {% block extra_content %}
+    {% endblock extra_content %}
+{% endblock inner %}

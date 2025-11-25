@@ -1,11 +1,22 @@
 from django.urls import path
 
 from . import views
-from .views import (PlayerListView, PlayerDetailView, PlayerUpdateView,
-    PostListView, PostDetailView, PostCreateView, PostUpdateView,
-    SiteDetailView, SiteListView,
-    TournamentDetailView, TournamentListView,TournamentRegistrationView,
-    SystemListView, SystemDetailView)
+from .views import (
+    PlayerDetailView,
+    PlayerListView,
+    PlayerUpdateView,
+    PostCreateView,
+    PostDetailView,
+    PostListView,
+    PostUpdateView,
+    SiteDetailView,
+    SiteListView,
+    SystemDetailView,
+    SystemListView,
+    TournamentDetailView,
+    TournamentListView,
+    TournamentRegistrationView,
+)
 
 app_name = "lsnz"
 

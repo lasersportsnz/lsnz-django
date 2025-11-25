@@ -1,0 +1,33 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Verify Your Email Address" %}{% endblock %}
+
+{% block inner %}
+    <div class="text-center mb-4">
+        <i class="bi bi-envelope display-4 text-success mb-3"></i>
+        <h5>{% trans "Verification Email Sent" %}</h5>
+    </div>
+
+    <div class="mb-4">
+        <p class="text-muted text-center">
+            {% blocktrans %}We have sent an email to you for verification. Follow the link provided to finalize the signup process. Please contact us if you do not receive it within a few minutes.{% endblocktrans %}
+        </p>
+    </div>
+
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        <strong>{% trans "Note:" %}</strong>
+        {% trans "You can now proceed to sign in with your account." %}
+    </div>
+{% endblock inner %}
+
+{% block card_footer %}
+    <div class="card-footer text-center">
+        <p class="mb-0">
+            <a href="{% url 'account_login' %}" class="text-decoration-none">
+                {% trans "Sign In" %}
+            </a>
+        </p>
+    </div>
+{% endblock card_footer %}

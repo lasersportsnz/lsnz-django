@@ -1,21 +1,20 @@
-from django.contrib.admin.options import re
-import markdown
 import os
-from django.utils import timezone
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
-from django.utils.text import slugify
-from django.db.models import Q, Value
-from django.db.models.functions import Lower, Replace
-from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, FormView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.contrib import messages
+
+import markdown
 from django.conf import settings
-from .models import Tournament, Site, Player, Grade, Post, Registration, Event, System
-from .forms import PostForm, TournamentRegistrationForm, PlayerProfileForm
+from django.contrib import messages
+from django.contrib.admin.options import re
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.list import ListView
+
+from .forms import PlayerProfileForm, PostForm, TournamentRegistrationForm
+from .models import Event, Grade, Player, Post, Registration, Site, System, Tournament
+
 
 def load_markdown_content(filename):
     """Load and convert markdown file to HTML"""
