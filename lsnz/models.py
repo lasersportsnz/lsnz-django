@@ -38,7 +38,7 @@ class Player(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     playing_since = models.DateField(_("playing since"), db_index=True, auto_now_add=True)
     home_site = models.ForeignKey('Site', on_delete=models.PROTECT, null=True, blank=True)
-    bio = models.TextField()
+    bio = models.TextField(blank=True, null=True)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"

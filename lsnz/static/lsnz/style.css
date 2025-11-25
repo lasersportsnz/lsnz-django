@@ -315,20 +315,6 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* Profile tips styling */
-.card.bg-secondary {
-    border: 1px solid #495057;
-}
-
-.card.bg-secondary .card-body ul {
-    padding-left: 1.2rem;
-}
-
-.card.bg-secondary .card-body li {
-    margin-bottom: 0.5rem;
-    line-height: 1.5;
-}
-
 @media (max-width: 768px) {
     .profile-picture-preview {
         width: 100px !important;

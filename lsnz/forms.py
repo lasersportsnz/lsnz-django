@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import UploadedFile
 from django.utils import timezone
 
 from .models import Event, Player, Post, Registration, Site
@@ -222,7 +223,7 @@ class PlayerProfileForm(forms.ModelForm):
         help_texts = {
             'alias': 'This is how other players will see you',
             'profile_picture': 'Upload a profile picture (max 5MB)',
-            'bio': 'A brief description about yourself and your gaming experience',
+            'bio': 'A brief description about yourself',
             'home_site': 'Your primary playing location'
         }
 
@@ -240,13 +241,18 @@ class PlayerProfileForm(forms.ModelForm):
     def clean_profile_picture(self):
         picture = self.cleaned_data.get('profile_picture')
         if picture:
-            # Validate file size (max 5MB)
-            if picture.size > 5 * 1024 * 1024:
-                raise ValidationError('Image file size must be less than 5MB.')
+            # If this is an uploaded file (new upload), validate it.
+            # Existing ImageFieldFile instances (already saved on the model)
+            # won't have a content_type attribute and should be left as-is.
+            if isinstance(picture, UploadedFile):
+                # Validate file size (max 5MB)
+                if picture.size > 5 * 1024 * 1024:
+                    raise ValidationError('Image file size must be less than 5MB.')
 
-            # Validate file type
-            if not picture.content_type.startswith('image/'):
-                raise ValidationError('File must be an image.')
+                # Validate file type
+                content_type = getattr(picture, 'content_type', '')
+                if not content_type.startswith('image/'):
+                    raise ValidationError('File must be an image.')
         return picture
 
     def __init__(self, *args, **kwargs):

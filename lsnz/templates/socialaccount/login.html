@@ -1,0 +1,23 @@
+{% extends "allauth/layouts/entrance.html" %}
+{% load i18n allauth socialaccount %}
+
+{% block inner %}
+    {% if process == "connect" %}
+        <h1 class="h4 mb-2">{% blocktrans with provider.name as provider %}Connect {{ provider }}{% endblocktrans %}</h1>
+        <p class="text-muted mb-4">{% blocktrans with provider.name as provider %}You are about to connect a new third-party account from {{ provider }}.{% endblocktrans %}</p>
+    {% else %}
+        <h1 class="h4 mb-2">{% blocktrans with provider.name as provider %}Sign In Via {{ provider }}{% endblocktrans %}</h1>
+        <p class="text-muted mb-4">{% blocktrans with provider.name as provider %}You are about to sign in using a third-party account from {{ provider }}.{% endblocktrans %}</p>
+    {% endif %}
+
+    {% element form method="post" no_visible_fields=True %}
+        {% slot actions %}
+            {% csrf_token %}
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">
+                    {% trans "Continue" %}
+                </button>
+            </div>
+        {% endslot %}
+    {% endelement %}
+{% endblock inner %}

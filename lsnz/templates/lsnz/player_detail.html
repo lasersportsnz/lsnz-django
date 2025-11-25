@@ -1,11 +1,17 @@
-{% extends "lsnz/base.html" %} {% block content %}
+{% extends "lsnz/base.html" %}
+{% load static %}
+{% block content %}
 <div class="text-content-box">
     <div class="table-responsive">
         <table class="table table-bordered table-dark align-middle mb-0"
             style="max-width: 600px; background-color: #23272b">
             <tr valign="top">
                 <td style="width: 140px">
-                    <img src="{{ player.profile_picture.url }}" class="img-fluid rounded" alt="Profile picture" />
+                    {% if player.profile_picture %}
+                        <img src="{{ player.profile_picture.url }}" class="img-fluid rounded" alt="Profile picture" />
+                    {% else %}
+                        <img src="{% static 'lsnz/default_profile.svg' %}" class="img-fluid rounded" alt="Default profile picture" />
+                    {% endif %}
                 </td>
                 <td>
                     <h1 class="h4 mb-2">Player: {{ player.alias }}</h1>
