@@ -98,6 +98,34 @@ class PlayerListView(ListView):
     def get_queryset(self):
         return Player.objects.all().select_related('grade').order_by('alias')
 
+
+class FormatListView(ListView):
+    """List all formats with a count of events."""
+    model = Format
+    template_name = 'lsnz/formats.html'
+    context_object_name = 'formats'
+
+    def get_queryset(self):
+        return Format.objects.annotate(event_count=Count('event')).order_by('name')
+
+
+class FormatDetailView(DetailView):
+    """Show a single format and its related events."""
+    model = Format
+    template_name = 'lsnz/format_detail.html'
+    context_object_name = 'format_obj'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        fmt = self.get_object()
+        # Events for this format, with related tournament/site/system to reduce queries
+        context['events'] = (
+            Event.objects.filter(format=fmt)
+            .select_related('tournament', 'tournament__site', 'tournament__system')
+            .order_by('-tournament__start_date')
+        )
+        return context
+
 class PlayerDetailView(DetailView):
     model = Player
     template_name = 'lsnz/player_detail.html'

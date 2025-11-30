@@ -1,0 +1,15 @@
+{% extends "lsnz/base.html" %}
+
+{% block title %}Format: {{ format_obj.name }}{% endblock %}
+
+{% block content %}
+<div class="text-content-box">
+    <h2>{{ format_obj.name }}</h2>
+
+    <p>{{ format_obj.description }}</p>
+    <p>
+        <a href="{% url 'lsnz:formats' %}">&larr; Back to all formats</a>
+    </p>
+
+</div>   
+{% endblock %}
