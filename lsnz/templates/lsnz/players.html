@@ -4,7 +4,7 @@
         <div class="col-lg-8 col-12 mb-4">
             <form id="player-points-form">
                 <div class="table-responsive">
-                    <table class="table table-dark table-striped table-bordered align-middle mb-0">
+                    <table id="playersTable" class="table table-dark table-striped table-bordered align-middle mb-0">
                         <thead>
                             <tr>
                                 <th>Alias</th>
@@ -59,10 +59,14 @@
         {% endif %}
     </div>
 </div>
-
-{% if grades %}
+{% endblock %}
+{% block scripts %}
 <script>
-    // No need for window.gradePoints, use data-points attribute directly
+$(document).ready(function () {
+      $('#playersTable').DataTable();
+});
 </script>
+{% if grades %}
 <script src="{% static 'lsnz/player_points.js' %}"></script>
-{% endif %} {% endblock %}
+{% endif %}
+{% endblock %}
