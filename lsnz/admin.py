@@ -7,6 +7,7 @@ from .models import (
     Event,
     Format,
     Grade,
+    MazeMap,
     Pass,
     Player,
     Post,
@@ -16,6 +17,7 @@ from .models import (
     System,
     Team,
     Tournament,
+    TournamentSeries,
 )
 
 admin.site.site_title = 'LSNZ'
@@ -67,14 +69,26 @@ class RegistrationAdmin(admin.ModelAdmin):
     list_display = ('player', 'event', 'team')
     list_filter = ('player', 'event')
 
+class MazeMapInline(admin.TabularInline):
+    model = MazeMap
+    extra = 1
+    fields = ('image', 'date')
+
+class SiteAdmin(admin.ModelAdmin):
+    list_display = ('name', 'country', 'system')
+    search_fields = ('name', 'country')
+    inlines = [MazeMapInline]
+
+
 admin.site.register(Grade)
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(Post)
 admin.site.register(System)
-admin.site.register(Site)
+admin.site.register(Site, SiteAdmin)
 admin.site.register(Tournament, TournamentAdmin)
 admin.site.register(Settings)
 admin.site.register(Format)
 admin.site.register(Team)
 admin.site.register(Registration, RegistrationAdmin)
+admin.site.register(TournamentSeries)
 admin.site.register(Pass)

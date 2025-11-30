@@ -15,5 +15,77 @@
         referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed/v1/place?key={{ settings.MAPS_API_KEY }}
             &q={{ site.name }}">
     </iframe>
+
+    {% if maze_maps %}
+    <hr class="my-5">
+    <h3>Maze Maps</h3>
+    
+    <div class="card bg-dark text-white mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Current Map</h5>
+        </div>
+        <div class="card-body">
+            {% if current_maze_map %}
+                <p class="text-muted small mb-3">
+                    Last updated: <strong>{{ current_maze_map.date|date:"F d, Y" }}</strong>
+                </p>
+                <div class="text-center">
+                    <img src="{{ current_maze_map.image.url }}" alt="Maze Map for {{ site.name }}" 
+                         class="img-fluid" style="max-width: 100%; max-height: 600px; object-fit: contain;">
+                </div>
+            {% else %}
+                <p class="text-muted">No maze maps available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if maze_maps.count > 1 %}
+    <div class="card bg-dark text-white">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Historical Maps</h5>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for maze_map in maze_maps %}
+                    <button class="list-group-item list-group-item-action {% if maze_map == current_maze_map %}active{% endif %} text-start"
+                            onclick="updateMazeMap('{{ maze_map.image.url }}', '{{ maze_map.date|date:'F d, Y' }}')">
+                        <div class="d-flex w-100 justify-content-between">
+                            <strong>{{ maze_map.date|date:"F d, Y" }}</strong>
+                            {% if maze_map == current_maze_map %}
+                            <span class="badge bg-success">Current</span>
+                            {% endif %}
+                        </div>
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
 </div>
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    function updateMazeMap(imageUrl, mapDate) {
+        // Find the image element and update it
+        const imgElement = document.querySelector('.card-body img');
+        if (imgElement) {
+            imgElement.src = imageUrl;
+        }
+        
+        // Update the date display
+        const dateElement = document.querySelector('.text-muted.small');
+        if (dateElement) {
+            dateElement.innerHTML = 'Last updated: <strong>' + mapDate + '</strong>';
+        }
+        
+        // Update active button styling
+        const buttons = document.querySelectorAll('.list-group-item');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.closest('.list-group-item').classList.add('active');
+    }
+</script>
+{% endblock %}
+
 {% endblock %}

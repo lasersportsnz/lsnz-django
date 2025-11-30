@@ -3,17 +3,27 @@ import os
 import markdown
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.admin.options import re
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, FormView, UpdateView
 from django.views.generic.list import ListView
 
 from .forms import PlayerProfileForm, PostForm, TournamentRegistrationForm
-from .models import Event, Grade, Player, Post, Registration, Site, System, Tournament
+from .models import (
+    Event,
+    Format,
+    Grade,
+    MazeMap,
+    Player,
+    Post,
+    Registration,
+    Site,
+    System,
+    Tournament,
+)
 
 
 def load_markdown_content(filename):
@@ -72,6 +82,22 @@ class SiteDetailView(DetailView):
     model = Site
     template_name = 'lsnz/site_detail.html'
     context_object_name = 'site'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        site = self.get_object()
+        
+        # Fetch all maze maps for this site, ordered by date (newest first)
+        maze_maps = MazeMap.objects.filter(site=site).order_by('-date')
+        context['maze_maps'] = maze_maps
+        
+        # Set the latest maze map as default (if any exist)
+        if maze_maps.exists():
+            context['current_maze_map'] = maze_maps.first()
+        else:
+            context['current_maze_map'] = None
+        
+        return context
 
 class SystemListView(ListView):
     model = System

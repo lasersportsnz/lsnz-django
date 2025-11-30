@@ -92,6 +92,11 @@ class Settings(models.Model):
    def __str__(self):
         return self.name
 
+class MazeMap(models.Model):
+    image = models.ImageField(upload_to='maze_maps/')
+    date = models.DateField(default=timezone.now)
+    site = models.ForeignKey('Site', on_delete=models.PROTECT)
+    
 class Site(models.Model):
     name = models.CharField(max_length=100)
     slug = AutoSlugField(unique=True, populate_from='name')
@@ -102,10 +107,15 @@ class Site(models.Model):
     def __str__(self):
         return self.name
 
+class TournamentSeries(models.Model):
+    name =  models.CharField(max_length=200)
+    slug = AutoSlugField(unique=True, populate_from='name')
+
 class Tournament(models.Model):
     name =  models.CharField(max_length=200)
     slug = AutoSlugField(unique=True, populate_from='name')
     site = models.ForeignKey(Site, on_delete=models.PROTECT)
+    series = models.ForeignKey(TournamentSeries, on_delete=models.PROTECT, null=True, blank=True)
     start_date = models.DateField("Event date", db_index=True)
     end_date = models.DateField("Event date", db_index=True)
     system = models.ForeignKey(System, on_delete=models.PROTECT)
@@ -116,6 +126,7 @@ class Tournament(models.Model):
 class Format(models.Model):
     name = models.CharField(max_length=50)
     slug = AutoSlugField(unique=True, populate_from='name')
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name
